@@ -1,11 +1,11 @@
 'use strict';
 
 describe('controllers', function(){
-    var myCtrl, _scope, _rootScope;
+    var myCtrl, _scope, $timeout;
   beforeEach(module('myApp'));
-  beforeEach(inject(function($rootScope, $window, $firebase, $controller) {
+  beforeEach(inject(function($rootScope, $window, $firebase, $controller, _$timeout_) {
     _scope = $rootScope.$new();
-    _rootScope = $rootScope;
+    $timeout = _$timeout_;
     
     var genFB = function(location) {
       return $firebase(new $window.Firebase('https://tagged-foosball.firebaseio.com/' + location));
@@ -17,10 +17,16 @@ describe('controllers', function(){
     });
   }));
 
-  it('should resolve a promise', function(done) {
+  it('should resolve a promise', function (done) {
+    var run = false;
     _scope.addTest().then(function() {
-      console.log('resolved within test');
-      done();
+      console.log('added');
+      run = true;
     });
+    setTimeout(function () {
+      $timeout.flush();
+      expect(run).toBe(true);
+      done();
+    }, 500);
   });
 });
